@@ -26,6 +26,7 @@ steps:
 - script: |
     # Ensure PATH is set again (each step is isolated in Azure DevOps)
     export GOPATH=$HOME/go
+    export PATH=$PATH:$GOPATH/bin
 
     # Run flogo build on your flogo.json
     flogo build -f flogo.json
