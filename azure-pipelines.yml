@@ -11,5 +11,5 @@ steps:
     ./build.sh
   displayName: 'Build Flogo Project'
 
-- publish: /path/to/artifacts/
-  artifact: flogo-executable
+# - publish: /path/to/artifacts/
+#   artifact: flogo-executable
