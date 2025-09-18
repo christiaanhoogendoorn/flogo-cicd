@@ -22,3 +22,11 @@ steps:
     # Check the version to confirm installation
     flogo --version
   displayName: 'Install Flogo CLI'
+
+- script: |
+  # Ensure PATH is set again (each step is isolated in Azure DevOps)
+  export PATH=$PATH:$(go env GOPATH)/bin
+
+  # Run flogo build on your flogo.json
+  flogo build -f flogo.json
+displayName: 'Flogo Build'
