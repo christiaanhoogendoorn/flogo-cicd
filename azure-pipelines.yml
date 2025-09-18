@@ -1,24 +1,24 @@
 trigger:
-- main   # or your branch
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# Install Go
-  script: |
-      # Check if Go is installed
-      if ! command -v go &> /dev/null; then
-          echo "Go is not installed. Please install Go first."
-          exit 1
-      fi
+- script: |
+    # Check if Go is installed
+    if ! command -v go &> /dev/null; then
+        echo "Go is not installed. Installing Go..."
+        sudo apt update
+        sudo apt install -y golang-go
+    fi
 
-      # Install Flogo CLI
-      go install github.com/TIBCOSoftware/flogo-cli@latest
+    # Install Flogo CLI
+    go install github.com/TIBCOSoftware/flogo-cli@latest
 
-      # Ensure the Flogo CLI is in the PATH
-      export PATH=$PATH:$(go env GOPATH)/bin
+    # Ensure the Flogo CLI is in the PATH
+    export PATH=$PATH:$(go env GOPATH)/bin
 
-      # Check the version to confirm installation
-      flogo version
+    # Check the version to confirm installation
+    flogo version
   displayName: 'Install Flogo CLI'
