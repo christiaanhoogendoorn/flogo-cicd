@@ -6,7 +6,7 @@ pool:
 
 steps:
 - script: |
-    go get -u github.com/TIBCOSoftware/flogo-cli
+    go install github.com/TIBCOSoftware/flogo-cli@latest
     chmod +x build.sh
     ./build.sh
   displayName: 'Build Flogo Project'
