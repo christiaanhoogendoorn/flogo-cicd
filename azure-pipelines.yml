@@ -2,15 +2,14 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
 - script: |
-    echo "Pulling Flogo Docker image from public registry..."
-    docker pull flogo/flogo-docker
-  displayName: 'Pull Flogo Docker Image'
+    go get -u github.com/TIBCOSoftware/flogo-cli
+    chmod +x build.sh
+    ./build.sh
+  displayName: 'Build Flogo Project'
 
-- script: |
-    echo "Running Flogo Docker container..."
-    docker run -d -p 3303:3303 flogo/flogo-docker eula-accept /bin/bash -c "sleep 10"
-  displayName: 'Run Flogo Docker Container'
+- publish: /path/to/artifacts/
+  artifact: flogo-executable
