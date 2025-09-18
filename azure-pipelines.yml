@@ -6,33 +6,19 @@ pool:
 
 steps:
 # Install Go
-- script: |
-    GO_VERSION=1.20.14
-    curl -sL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz -o go.tar.gz
-    sudo tar -C /usr/local -xzf go.tar.gz
-    echo "##vso[task.prependpath]/usr/local/go/bin"
-    go version
-  displayName: 'Install Go'
+  script: |
+      # Check if Go is installed
+      if ! command -v go &> /dev/null; then
+          echo "Go is not installed. Please install Go first."
+          exit 1
+      fi
 
-# Install Flogo CLI
-- script: |
-    ls -ltra
-    curl -sL https://github.com/project-flogo/cli/archive/refs/tags/v0.12.0.tar.gz -o flogo.tar.gz
-    tar -xzf flogo.tar.gz
-    ls -ltra
-    echo "blaat"
-    sudo mv cli-0.12.0 /usr/local/bin/flogo
-    flogo version
+      # Install Flogo CLI
+      go install github.com/TIBCOSoftware/flogo-cli@latest
+
+      # Ensure the Flogo CLI is in the PATH
+      export PATH=$PATH:$(go env GOPATH)/bin
+
+      # Check the version to confirm installation
+      flogo version
   displayName: 'Install Flogo CLI'
-
-# Run Flogo Build
-- script: |
-    flogo build -f flogo.json
-  displayName: 'Build Flogo App'
-
-# # (Optional) Publish build artifacts
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     PathtoPublish: 'bin'
-#     ArtifactName: 'flogo-binaries'
-#     publishLocation: 'Container'
