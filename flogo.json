@@ -1,85 +1,134 @@
 {
-  "name": "LogPathFlow",
+  "name": "Transform",
   "type": "flogo:app",
   "version": "0.0.1",
+  "appModel": "1.1.0",
+  "description": "",
+  "imports": [
+    "github.com/project-flogo/contrib/activity/actreturn",
+    "github.com/project-flogo/contrib/activity/log",
+    "github.com/project-flogo/contrib/activity/xml2json",
+    "github.com/project-flogo/contrib/function/string",
+    "github.com/project-flogo/contrib/trigger/rest",
+    "github.com/project-flogo/flow"
+  ],
   "triggers": [
     {
-      "id": "http_trigger",
-      "ref": "github.com/project-flogo/contrib/trigger/rest",
+      "id": "receive_http_message",
+      "ref": "#rest",
+      "name": "Receive HTTP Message",
+      "description": "Simple REST Trigger",
       "settings": {
-        "port": "9999"
+        "port": 9999
       },
       "handlers": [
         {
           "settings": {
-            "method": "GET",
-            "path": "/{path:*}"
+            "method": "POST",
+            "path": "/xml"
           },
-          "actions": [
-            {
-              "ref": "#flow",
-              "settings": {
-                "flowURI": "res://flow:main"
-              }
+          "action": {
+            "ref": "#flow",
+            "settings": {
+              "flowURI": "res://flow:transform"
+            },
+            "input": {
+              "xml": "=$.content"
+            },
+            "output": {
+              "code": 200,
+              "data": "=$.json"
             }
-          ]
+          }
         }
       ]
     }
   ],
   "resources": [
     {
-      "id": "flow:main",
+      "id": "flow:transform",
       "data": {
-        "name": "MainFlow",
+        "name": "Transform",
         "metadata": {
           "input": [
-            { "name": "params", "type": "any" }
+            {
+              "name": "xml",
+              "type": "string"
+            }
           ],
-          "output": []
+          "output": [
+            {
+              "name": "json",
+              "type": "any"
+            }
+          ]
         },
         "tasks": [
           {
-            "id": "check_path",
-            "name": "CheckPath",
+            "id": "xml2json_2",
+            "name": "XML2JSON Activity",
+            "description": "Converts given XML into JSON",
             "activity": {
-              "ref": "github.com/project-flogo/contrib/activity/mapper",
+              "ref": "#xml2json",
               "input": {
-                "mappings": [
-                  {
-                    "type": "expression",
-                    "value": "=$.params.path",
-                    "mapTo": "path"
-                  }
-                ]
+                "xmlData": "=$flow.xml"
               }
             }
           },
           {
-            "id": "log_hi",
-            "name": "LogHi",
+            "id": "log_3",
+            "name": "Log",
+            "description": "Logs a message",
             "activity": {
-              "ref": "github.com/project-flogo/contrib/activity/log",
+              "ref": "#log",
               "input": {
-                "message": "hi"
+                "addDetails": true,
+                "usePrint": true,
+                "message": "=string.concat(\"Note: \", $activity[xml2json_2].jsonObject.note)"
               }
-            },
-            "conditions": {
-              "expr": "$.params.path == \"log\""
             }
           },
           {
-            "id": "log_bye",
-            "name": "LogBye",
+            "id": "actreturn_4",
+            "name": "Return",
+            "description": "Return Activity A",
             "activity": {
-              "ref": "github.com/project-flogo/contrib/activity/log",
-              "input": {
-                "message": "bye"
+              "ref": "#actreturn",
+              "settings": {
+                "mappings": {
+                  "json": "=$activity[xml2json_2].jsonObject.note"
+                }
               }
-            },
-            "conditions": {
-              "expr": "$.params.path != \"log\""
             }
+          },
+          {
+            "id": "actreturn_5",
+            "name": "Return (2)",
+            "description": "Return B",
+            "activity": {
+              "ref": "#actreturn",
+              "settings": {
+                "mappings": {
+                  "json": "Path B"
+                }
+              }
+            }
+          }
+        ],
+        "links": [
+          {
+            "from": "xml2json_2",
+            "to": "log_3"
+          },
+          {
+            "from": "log_3",
+            "to": "actreturn_4"
+          },
+          {
+            "from": "log_3",
+            "to": "actreturn_5",
+            "type": "expression",
+            "value": "string.equals($activity[xml2json_2].jsonObject.note.to, \"B\")"
           }
         ]
       }
