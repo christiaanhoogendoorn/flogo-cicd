@@ -14,7 +14,7 @@ steps:
     fi
 
     # Install Flogo CLI
-    go install github.com/TIBCOSoftware/flogo-cli@latest
+    go install github.com/project-flogo/cli/...@latest
 
     # Ensure the Flogo CLI is in the PATH
     export PATH=$PATH:$(go env GOPATH)/bin
