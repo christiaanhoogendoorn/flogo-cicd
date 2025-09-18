@@ -20,5 +20,5 @@ steps:
     export PATH=$PATH:$(go env GOPATH)/bin
 
     # Check the version to confirm installation
-    flogo version
+    flogo --version
   displayName: 'Install Flogo CLI'
