@@ -21,7 +21,7 @@ steps:
     tar -xzf flogo.tar.gz
     ls -ltra
     echo "blaat"
-    sudo mv flogo /usr/local/bin/
+    sudo mv cli-0.12.0 /usr/local/bin/flogo
     flogo version
   displayName: 'Install Flogo CLI'
 
