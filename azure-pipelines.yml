@@ -1,18 +1,23 @@
 trigger:
-- main   # or whatever branch you want
+- main   # or your branch
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-# Install Go (needed for Flogo)
-- task: UseGo@0
-  inputs:
-    version: '1.20.x'   # choose a Go version supported by Flogo
+# Install Go
+- script: |
+    GO_VERSION=1.20.14
+    curl -sL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz -o go.tar.gz
+    sudo tar -C /usr/local -xzf go.tar.gz
+    echo "##vso[task.prependpath]/usr/local/go/bin"
+    go version
+  displayName: 'Install Go'
 
 # Install Flogo CLI
 - script: |
-    curl -sL https://github.com/TIBCOSoftware/flogo-cli/releases/download/v0.5.8/flogo-0.5.8-linux-amd64.tar.gz -o flogo.tar.gz
+    FLOGO_VERSION=0.5.8
+    curl -sL https://github.com/TIBCOSoftware/flogo-cli/releases/download/v${FLOGO_VERSION}/flogo-${FLOGO_VERSION}-linux-amd64.tar.gz -o flogo.tar.gz
     tar -xzf flogo.tar.gz
     sudo mv flogo /usr/local/bin/
     flogo version
@@ -23,9 +28,9 @@ steps:
     flogo build -f flogo.json
   displayName: 'Build Flogo App'
 
-# (Optional) Publish the generated binary as a pipeline artifact
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: 'bin'
-    ArtifactName: 'flogo-binaries'
-    publishLocation: 'Container'
+# # (Optional) Publish build artifacts
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: 'bin'
+#     ArtifactName: 'flogo-binaries'
+#     publishLocation: 'Container'
