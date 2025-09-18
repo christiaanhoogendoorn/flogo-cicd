@@ -31,6 +31,8 @@ steps:
     # Run flogo build on your flogo.json
     flogo build -f flogo.json
     ls -ltra
+    cd bin
+    ls -ltra
   displayName: 'Flogo Build'
 
 # # (Optional) Publish the generated binary or Go project
