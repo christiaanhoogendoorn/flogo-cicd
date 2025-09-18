@@ -12,5 +12,5 @@ steps:
 
 - script: |
     echo "Running Flogo Docker container..."
-    docker run -d -p 3303:3303 flogo/flogo-docker eula-accept
+    docker run -d -p 3303:3303 flogo/flogo-docker eula-accept /bin/bash -c "sleep 10"
   displayName: 'Run Flogo Docker Container'
